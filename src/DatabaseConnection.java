@@ -7,6 +7,7 @@ public class DatabaseConnection {
     //We declare our variables at the beginning for question of visibility and access
     private int loop_counter = 0;
     private boolean keep_going = true;
+    private boolean verification_enter;
     private boolean validation_statement = false;
     private boolean validation_connection = false;
     private String sql_statement;
@@ -129,51 +130,66 @@ public class DatabaseConnection {
                 /*As the project description tells us, we have to demonstrate that we can add at least 5 individuals in the database.
                  * So, when the 5th individuals is added in the database, we ask the user if he wants to keep adding individuals in the database, or
                  * if want to exit*/
-                if(this.loop_counter >= 5){
-                    String user_entry = JOptionPane.showInputDialog("Enter 1 to continue, or another number to quit : ");
-                    int decision_user = Integer.parseInt(user_entry);
-                    if(decision_user != 1){
-                        this.keep_going = false;
-                        break;
-                    }
+                if(this.loop_counter >= 1){
+                    this.verification_enter = false;
+                    do{
+                        try{
+                            String user_entry = JOptionPane.showInputDialog("Enter 1 to continue, or another number to quit : ");
+                            int decision_user = Integer.parseInt(user_entry);
+                            if(decision_user != 1){
+                                this.keep_going = false;
+                                break;
+                            }
+                            this.verification_enter = true;
+                        }
+                        catch(NumberFormatException e){
+                            JOptionPane.showMessageDialog(null,"You can't enter a String !");
+                        }
+                    }while(!this.verification_enter);
+
                 }
                 this.validation_statement = false;
                 /*This do while loop allows us to ask again the user if he enter wrong data in the database, such as
                  * String in the field hourly_pay_rade, which expects an integer value.*/
-                do{
-                    this.panel = new JPanel(new BorderLayout(5,5));
-                    this.label = new JPanel(new GridLayout(3,1));
-                    this.label.add(new JLabel("Name : ",SwingConstants.RIGHT));
-                    this.label.add(new JLabel("Position : ",SwingConstants.RIGHT));
-                    this.label.add(new JLabel("hourly_pay_rade : ",SwingConstants.RIGHT));
+                if(this.keep_going){
+                    do{
+                        this.panel = new JPanel(new BorderLayout(5,5));
+                        this.label = new JPanel(new GridLayout(3,1));
+                        this.label.add(new JLabel("Name : ",SwingConstants.RIGHT));
+                        this.label.add(new JLabel("Position : ",SwingConstants.RIGHT));
+                        this.label.add(new JLabel("hourly_pay_rade : ",SwingConstants.RIGHT));
 
-                    this.panel.add(label,BorderLayout.WEST);
-                    this.controls = new JPanel(new GridLayout(0,1));
+                        this.panel.add(label,BorderLayout.WEST);
+                        this.controls = new JPanel(new GridLayout(0,1));
 
-                    JTextField name = new JTextField();
-                    controls.add(name);
-                    JTextField position = new JTextField();
-                    controls.add(position);
-                    JTextField hourly_pay_rate = new JTextField();
-                    this.controls.add(hourly_pay_rate);
-                    this.panel.add(controls,BorderLayout.CENTER);
+                        JTextField name = new JTextField();
+                        controls.add(name);
+                        JTextField position = new JTextField();
+                        controls.add(position);
+                        JTextField hourly_pay_rate = new JTextField();
+                        this.controls.add(hourly_pay_rate);
+                        this.panel.add(controls,BorderLayout.CENTER);
 
-                    JOptionPane.showMessageDialog(null, this.panel,"Informations individual number " + (this.loop_counter+1),JOptionPane.PLAIN_MESSAGE);
+                        JOptionPane.showMessageDialog(null, this.panel,"Informations individual number " + (this.loop_counter+1),JOptionPane.PLAIN_MESSAGE);
 
-                    /*This try catch block handle SQL syntax error*/
-                    try{
-                        this.sql_statement = "INSERT INTO Employee" + " (name,position,hourly_pay_rate) VALUES('" + name.getText() + "','" + position.getText() + "'," + Integer.parseInt(hourly_pay_rate.getText()) + ");";
-                        this.statement.executeUpdate(this.sql_statement);
-                        this.validation_statement = true;
-                    }
-                    catch(NumberFormatException e){
-                        JOptionPane.showMessageDialog(null,"You can't enter a String as hourly_pay_rate. Please enter again the informations.");
-                    }
-                }while(!this.validation_statement);
+                        /*This try catch block handle SQL syntax error*/
+                        try{
+                            this.sql_statement = "INSERT INTO Employee" + " (name,position,hourly_pay_rate) VALUES('" + name.getText() + "','" + position.getText() + "'," + Integer.parseInt(hourly_pay_rate.getText()) + ");";
+                            this.statement.executeUpdate(this.sql_statement);
+                            this.validation_statement = true;
+                        }
+                        catch(NumberFormatException e){
+                            JOptionPane.showMessageDialog(null,"You can't enter a String as hourly_pay_rate. Please enter again the informations.");
+                        }
+                    }while(!this.validation_statement);
 
-                JOptionPane.showMessageDialog(null,"The individual number " + (this.loop_counter + 1) + " has been added in the database.");
-                this.loop_counter+=1;
-            }while(this.keep_going || this.loop_counter < 5);
+                    JOptionPane.showMessageDialog(null,"The individual number " + (this.loop_counter + 1) + " has been added in the database.");
+                    this.loop_counter+=1;
+                }
+                else{
+                    break;
+                }
+            }while(this.keep_going || this.loop_counter < 1);
         }
         catch(SQLException e){
             JOptionPane.showMessageDialog(null,"Error syntax SQL when adding data in the Employee table");
