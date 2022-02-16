@@ -1,9 +1,6 @@
-import com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping;
-
 import java.awt.*;
 import java.sql.*;
 import javax.swing.*;
-import javax.swing.border.Border;
 
 public class main {
     public static void main(String[] args) throws SQLException, SQLSyntaxErrorException{
@@ -19,6 +16,7 @@ public class main {
         String sql_create_table_employee;
         JTextField database_name;
         String sql_statement_adding;
+        String sql_display_database;
         JPanel controls;
         JPanel panel;
         JPanel label;
@@ -26,6 +24,7 @@ public class main {
         JPasswordField password;
         Statement statement;
         Connection connection;
+        ResultSet result_database;
 
         /*Our script will be encapsulated in try catch blocks. The first will have for purpose to handle
         ClassNotFoundException exception, relative to the driver used for the database connection, which
@@ -62,13 +61,12 @@ public class main {
 
                 Class.forName("com.mysql.cj.jdbc.Driver");
 
-                /*This try catch block whill handle the SQLNonTransientConnectionException exception, displayed when
+                /*This try catch block whill handle the SQLNonTransientConnectionException exception, displayed whenabb
                 * the user's credentials for the database connection are incorrect*/
                 try{
 
                     connection = DriverManager.getConnection(url,username.getText(),password.getText());
                     statement = connection.createStatement();
-
                     /*This do while loop */
                     do{
                         panel = new JPanel(new BorderLayout(5,5));
@@ -89,7 +87,7 @@ public class main {
                         catch(SQLException e){
                             JOptionPane.showMessageDialog(null,"There is an error in the SQL syntax. Please enter again the database name");
                         }
-                    }while(keep_going == true);
+                    }while(keep_going);
                     keep_going = true;
                     sql_second_statement = "CREATE DATABASE " + database_name.getText() + ";";
                     sql_use_database = "USE " + database_name.getText() + ";";
@@ -133,7 +131,7 @@ public class main {
                             controls.add(hourly_pay_rate);
                             panel.add(controls,BorderLayout.CENTER);
 
-                            JOptionPane.showMessageDialog(null, panel,"Informations individual number " + loop_counter+1,JOptionPane.QUESTION_MESSAGE);
+                            JOptionPane.showMessageDialog(null, panel,"Informations individual number " + (loop_counter+1),JOptionPane.QUESTION_MESSAGE);
                             try{
                                 sql_statement_adding = "INSERT INTO Employee" + " (name,position,hourly_pay_rate) VALUES('" + name.getText() + "','" + position.getText() + "'," + Integer.parseInt(hourly_pay_rate.getText()) + ");";
                                 statement.executeUpdate(sql_statement_adding);
@@ -142,20 +140,28 @@ public class main {
                             catch(NumberFormatException e){
                                 JOptionPane.showMessageDialog(null,"You can't enter a String as hourly_pay_rate. Please enter again the informations.");
                             }
-                        }while(validation_statement == false);
+                        }while(!validation_statement);
                         JOptionPane.showMessageDialog(null,"The individual number " + (loop_counter + 1) + " has been added in the database.");
                         loop_counter+=1;
                     }while(keep_going || loop_counter < 5);
+                    /*Affichage de la base de données */;
+                    JOptionPane.showMessageDialog(null,"Thank you !\nBefore leaving us, you can see the database's data in the console !");
+                    try{
+                        result_database = statement.executeQuery("SELECT * FROM Employee");
+                        while (result_database.next()) {
+                            System.out.println(result_database.getInt("employee_id") + " - " + result_database.getString("name") + "  " + result_database.getString("position") + "  " + result_database.getInt("hourly_pay_rate"));
+                        }
+                    }
+                    catch(SQLException e){
+                        System.out.println("Erreur sql");
+                    }
                     System.exit(0);
                     validation_statement = true;
                 }
                 catch (SQLNonTransientConnectionException e){
                     JOptionPane.showMessageDialog(null,"Your credentials are incorrect. Please try again");
                 }
-            }while(validation_statement == false);
-
-            JOptionPane.showMessageDialog(null,"You've succeed to connect to the database.");
-            validation_statement = false;
+            }while(!validation_statement);
 
         }
         catch(ClassNotFoundException e){
