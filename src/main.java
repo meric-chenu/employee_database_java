@@ -61,13 +61,15 @@ public class main {
 
                 Class.forName("com.mysql.cj.jdbc.Driver");
 
-                /*This try catch block whill handle the SQLNonTransientConnectionException exception, displayed whenabb
+                /*This try catch block will handle the SQLNonTransientConnectionException exception, displayed when
                 * the user's credentials for the database connection are incorrect*/
                 try{
-
+                    /*The variable connection, as its name tells us, handle the database, by having the database localhost url,
+                    * and the credentials (username and password, informed by the user in our case.*/
                     connection = DriverManager.getConnection(url,username.getText(),password.getText());
                     statement = connection.createStatement();
-                    /*This do while loop */
+
+                    /*This do while loop allows us to ask again the user if he enter a wrong database name, such as a name starting by a number*/
                     do{
                         panel = new JPanel(new BorderLayout(5,5));
                         label = new JPanel(new GridLayout(1,1));
@@ -89,6 +91,7 @@ public class main {
                         }
                     }while(keep_going);
                     keep_going = true;
+
                     sql_second_statement = "CREATE DATABASE " + database_name.getText() + ";";
                     sql_use_database = "USE " + database_name.getText() + ";";
                     sql_drop_table_employee = "DROP TABLE IF EXISTS Employee;";
@@ -99,11 +102,13 @@ public class main {
                     statement.executeUpdate(sql_use_database);
                     statement.executeUpdate(sql_drop_table_employee);
                     statement.executeUpdate(sql_create_table_employee);
-
-                    System.out.print("Database created succesfuly ! ");
                     JOptionPane.showMessageDialog(null,"Database created succesfuly !");
                     JOptionPane.showMessageDialog(null,"You are going to enter at least 5 individuals in the database.");
+                    //This do while loop allows us to ask again the user to enter new individuals.
                     do{
+                        /*As the project description tells us, we have to demonstrate that we can add at least 5 individuals in the database.
+                        * So, when the 5th individuals is added in the database, we ask the user if he wants to keep adding individuals in the database, or
+                        * if want to exit*/
                         if(loop_counter >= 5){
                             String user_entry = JOptionPane.showInputDialog("Enter 1 to continue, or another number to quit : ");
                             int decision_user = Integer.parseInt(user_entry);
@@ -113,6 +118,8 @@ public class main {
                             }
                         }
                         validation_statement = false;
+                        /*This do while loop allows us to ask again the user if he enter wrong data in the database, such as
+                        * String in the field hourly_pay_rade, which expects an integer value.*/
                         do{
                             panel = new JPanel(new BorderLayout(5,5));
                             label = new JPanel(new GridLayout(3,1));
@@ -132,6 +139,8 @@ public class main {
                             panel.add(controls,BorderLayout.CENTER);
 
                             JOptionPane.showMessageDialog(null, panel,"Informations individual number " + (loop_counter+1),JOptionPane.QUESTION_MESSAGE);
+
+                            /*This try catch block handle SQL syntax error*/
                             try{
                                 sql_statement_adding = "INSERT INTO Employee" + " (name,position,hourly_pay_rate) VALUES('" + name.getText() + "','" + position.getText() + "'," + Integer.parseInt(hourly_pay_rate.getText()) + ");";
                                 statement.executeUpdate(sql_statement_adding);
@@ -141,6 +150,7 @@ public class main {
                                 JOptionPane.showMessageDialog(null,"You can't enter a String as hourly_pay_rate. Please enter again the informations.");
                             }
                         }while(!validation_statement);
+
                         JOptionPane.showMessageDialog(null,"The individual number " + (loop_counter + 1) + " has been added in the database.");
                         loop_counter+=1;
                     }while(keep_going || loop_counter < 5);
@@ -165,10 +175,10 @@ public class main {
 
         }
         catch(ClassNotFoundException e){
-            System.out.print(e.getException());
+            JOptionPane.showMessageDialog(null,"There is an error with the Driver allowing the database connection.");
         }
         catch(SQLException e){
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(null,"SQL syntax error.");
         }
 
 
