@@ -181,7 +181,7 @@ public class DatabaseConnection {
 
     }
 
-    public void exitProgram(){
+    public void displayDatabase(){
         //Before leaving the program, we're going to display the database
         JOptionPane.showMessageDialog(null,"Thank you !\nBefore leaving us, you can see the database's data in the console !");
         try{
@@ -193,7 +193,6 @@ public class DatabaseConnection {
         catch(SQLException e){
             System.out.println("Erreur sql");
         }
-        System.exit(0);
     }
 
 

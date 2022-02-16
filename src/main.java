@@ -7,7 +7,8 @@ public class main {
 
         new_connection.setTableDatabase();
 
-        new_connection.exitProgram();
+        new_connection.displayDatabase();
+        System.exit(0);
 
 
 
