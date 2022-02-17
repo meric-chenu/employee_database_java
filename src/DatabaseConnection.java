@@ -130,7 +130,7 @@ public class DatabaseConnection {
                 /*As the project description tells us, we have to demonstrate that we can add at least 5 individuals in the database.
                  * So, when the 5th individuals is added in the database, we ask the user if he wants to keep adding individuals in the database, or
                  * if want to exit*/
-                if(this.loop_counter >= 1){
+                if(this.loop_counter >= 5){
                     this.verification_enter = false;
                     do{
                         try{
@@ -189,7 +189,7 @@ public class DatabaseConnection {
                 else{
                     break;
                 }
-            }while(this.keep_going || this.loop_counter < 1);
+            }while(this.keep_going || this.loop_counter < 5);
         }
         catch(SQLException e){
             JOptionPane.showMessageDialog(null,"Error syntax SQL when adding data in the Employee table");
